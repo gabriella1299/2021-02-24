@@ -148,7 +148,7 @@ public class PremierLeagueDAO {
 		String sql = "SELECT distinct a1.PlayerID AS p1, a2.PlayerID AS p2 "
 				+ "FROM actions a1, actions a2 "
 				+ "WHERE a1.PlayerID> a2.PlayerID AND "
-				+ "		a1.MatchID=? AND a2.MatchID=a1.MatchID";
+				+ "		a1.MatchID=? AND a2.MatchID=a1.MatchID AND a1.TeamID<> a2.TeamID";
 		List<Arco> result = new ArrayList<Arco>();
 		Connection conn = DBConnect.getConnection();
 
@@ -173,7 +173,7 @@ public class PremierLeagueDAO {
 	}
 	
 	public double getEfficienza(Player p,Match m) {
-		String sql="SELECT SUM(a.TotalSuccessfulPassesAll) AS SP, SUM(a.Assists) AS ASS, SUM(a.TimePlayed) AS TP "
+		String sql="SELECT a.TotalSuccessfulPassesAll AS SP, a.Assists AS ASS, a.TimePlayed AS TP "
 				+ "FROM actions a "
 				+ "WHERE a.MatchID=? AND a.PlayerID=? ";
 		
