@@ -48,6 +48,7 @@ public class FXMLController {
     @FXML
     void doCreaGrafo(ActionEvent event) {
     	
+    	
     }
 
     @FXML
@@ -73,5 +74,6 @@ public class FXMLController {
     
     public void setModel(Model model) {
     	this.model = model;
+    	
     }
 }
