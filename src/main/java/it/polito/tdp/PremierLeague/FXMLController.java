@@ -45,20 +45,7 @@ public class FXMLController {
     @FXML // fx:id="txtResult"
     private TextArea txtResult; // Value injected by FXMLLoader
 
-    @FXML
-    void doCreaGrafo(ActionEvent event) {
-    	
-    }
-
-    @FXML
-    void doGiocatoreMigliore(ActionEvent event) {    	
-    	
-    }
     
-    @FXML
-    void doSimula(ActionEvent event) {
-
-    }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
