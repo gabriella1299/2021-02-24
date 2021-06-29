@@ -63,22 +63,31 @@ public class Model {
 	}
 	
 	public GiocatoreMigliore getGiocatoreMigliore() {
-		GiocatoreMigliore best=null;
-		double max = 0.0 ;
+		Player best=null;
+		double max =(double) Integer.MIN_VALUE;
 		
 		
 		for(Player p: this.grafo.vertexSet()) {
-			double delta = 0.0 ;
-			for(DefaultWeightedEdge e: this.grafo.outgoingEdgesOf(p))
-				delta += this.grafo.getEdgeWeight(e) ;
-			for(DefaultWeightedEdge e: this.grafo.incomingEdgesOf(p))
-				delta -= this.grafo.getEdgeWeight(e) ;
 			
+			double pesoUscente = 0.0 ;
+			for(DefaultWeightedEdge e: this.grafo.outgoingEdgesOf(p))
+				pesoUscente += this.grafo.getEdgeWeight(e) ;
+			
+			double pesoEntrante = 0.0 ;
+			for(DefaultWeightedEdge e: this.grafo.incomingEdgesOf(p))
+				pesoEntrante -= this.grafo.getEdgeWeight(e) ;
+			
+			double delta=pesoUscente-pesoEntrante;
 			if(delta>max) {
-				best = new GiocatoreMigliore(p, delta) ;
+				best = p ;
+				max=delta;
 			}
 		}
-		return best; 
+		
+		GiocatoreMigliore g=new GiocatoreMigliore(best,max);
+		return g; 
+		
+		
 		
 
 	}
