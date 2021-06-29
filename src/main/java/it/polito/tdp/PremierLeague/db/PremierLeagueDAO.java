@@ -6,7 +6,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import it.polito.tdp.PremierLeague.model.Action;
+import it.polito.tdp.PremierLeague.model.Arco;
 import it.polito.tdp.PremierLeague.model.Match;
 import it.polito.tdp.PremierLeague.model.Player;
 import it.polito.tdp.PremierLeague.model.Team;
@@ -85,7 +88,8 @@ public class PremierLeagueDAO {
 	public List<Match> listAllMatches(){
 		String sql = "SELECT m.MatchID, m.TeamHomeID, m.TeamAwayID, m.teamHomeFormation, m.teamAwayFormation, m.resultOfTeamHome, m.date, t1.Name, t2.Name   "
 				+ "FROM Matches m, Teams t1, Teams t2 "
-				+ "WHERE m.TeamHomeID = t1.TeamID AND m.TeamAwayID = t2.TeamID";
+				+ "WHERE m.TeamHomeID = t1.TeamID AND m.TeamAwayID = t2.TeamID "
+				+ "ORDER BY m.MatchID";
 		List<Match> result = new ArrayList<Match>();
 		Connection conn = DBConnect.getConnection();
 
@@ -110,5 +114,92 @@ public class PremierLeagueDAO {
 			return null;
 		}
 	}
+	
+	public List<Player> getVertici(Match m,Map<Integer,Player> map){
+		String sql = "SELECT DISTINCT p.* "
+				+ "FROM actions a, players p "
+				+ "WHERE a.PlayerID=p.PlayerID AND "
+				+ "		a.MatchID=?";
+		List<Player> result = new ArrayList<Player>();
+		Connection conn = DBConnect.getConnection();
+
+		try {
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setInt(1, m.getMatchID());
+			ResultSet res = st.executeQuery();
+			while (res.next()) {
+				if(!map.containsKey(res.getInt("PlayerID"))) {
+					Player player = new Player(res.getInt("PlayerID"), res.getString("Name"));
+					result.add(player);
+					map.put(res.getInt("PlayerID"), player);
+				}
+				
+			}
+			conn.close();
+			return result;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public List<Arco> getArchi(Match m,Map<Integer,Player> map){
+		String sql = "SELECT distinct a1.PlayerID AS p1, a2.PlayerID AS p2 "
+				+ "FROM actions a1, actions a2 "
+				+ "WHERE a1.PlayerID> a2.PlayerID AND "
+				+ "		a1.MatchID=? AND a2.MatchID=a1.MatchID";
+		List<Arco> result = new ArrayList<Arco>();
+		Connection conn = DBConnect.getConnection();
+
+		try {
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setInt(1, m.getMatchID());
+			ResultSet res = st.executeQuery();
+			while (res.next()) {
+				if(map.containsKey(res.getInt("p1")) && map.containsKey(res.getInt("p2")) ) {
+					Arco a = new Arco(map.get(res.getInt("p1")), map.get(res.getInt("p2")), null);
+					result.add(a);
+				}
+				
+			}
+			conn.close();
+			return result;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public double getEfficienza(Player p,Match m) {
+		String sql="SELECT SUM(a.TotalSuccessfulPassesAll) AS SP, SUM(a.Assists) AS ASS, SUM(a.TimePlayed) AS TP "
+				+ "FROM actions a "
+				+ "WHERE a.MatchID=? AND a.PlayerID=? ";
+		
+		double efficienza=0.0;
+		Connection conn = DBConnect.getConnection();
+
+		try {
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setInt(1, m.getMatchID());
+			st.setInt(2, p.getPlayerID());
+			ResultSet res = st.executeQuery();
+			if (res.next()) {
+					int sp=res.getInt("SP");
+					int ass=res.getInt("ASS");
+					int tp=res.getInt("TP");
+					efficienza=(double) (sp+ass)/(tp);
+			}
+				
+			conn.close();
+			return efficienza;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return 0.0;
+		}
+	}
+	
 	
 }

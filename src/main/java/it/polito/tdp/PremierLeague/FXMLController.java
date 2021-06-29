@@ -8,6 +8,7 @@ package it.polito.tdp.PremierLeague;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import it.polito.tdp.PremierLeague.model.GiocatoreMigliore;
 import it.polito.tdp.PremierLeague.model.Match;
 import it.polito.tdp.PremierLeague.model.Model;
 import javafx.event.ActionEvent;
@@ -45,7 +46,45 @@ public class FXMLController {
     @FXML // fx:id="txtResult"
     private TextArea txtResult; // Value injected by FXMLLoader
 
+    @FXML
+    void doCreaGrafo(ActionEvent event) {
+    	
+    	txtResult.clear();
+    	
+    	Match m=cmbMatch.getValue();
+    	
+    	if(m==null) {
+    		txtResult.appendText("Selezionare un match!");
+    		return;
+    	}
+    	
+    	this.model.creaGrafo(m);
+    	txtResult.appendText("Grafo creato!\n");
+    	txtResult.appendText("#vertici: " + this.model.getNVertici() + "\n");
+    	txtResult.appendText("#archi: " + this.model.getNArchi());
+        
+    	btnGiocatoreMigliore.setDisable(false);
+    	btnSimula.setDisable(false);
+    	txtN.setDisable(false);
+    	
+    }
+
+    @FXML
+    void doGiocatoreMigliore(ActionEvent event) {    	
+    	
+    	txtResult.clear();
+    	
+    	
+    	GiocatoreMigliore best = model.getGiocatoreMigliore() ;
+    	
+    	txtResult.appendText("Giocatore migliore: "+best+"\n");
+
+    }
     
+    @FXML
+    void doSimula(ActionEvent event) {
+
+    }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
@@ -60,5 +99,13 @@ public class FXMLController {
     
     public void setModel(Model model) {
     	this.model = model;
+    	
+    	cmbMatch.getItems().addAll(this.model.listAllMatches());
+    	
+    	btnGiocatoreMigliore.setDisable(true);
+    	btnSimula.setDisable(true);
+    	txtN.setDisable(true);
+    	txtResult.setEditable(false);
+    	
     }
 }
