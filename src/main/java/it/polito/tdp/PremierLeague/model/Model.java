@@ -39,7 +39,7 @@ public class Model {
 				double eff2=this.dao.getEfficienza(a.getP2(), m);
 				double diff=Math.abs(eff1-eff2); //se >0-->eff1>eff2
 				a.setD(diff);
-				if(eff1>eff2) {
+				if(eff1>=eff2) {
 					Graphs.addEdgeWithVertices(this.grafo, a.getP1(), a.getP2(), a.getD());
 				}
 				else if(eff2>eff1) {
